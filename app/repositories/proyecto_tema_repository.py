@@ -1,77 +1,61 @@
 from app.core.database import obtener_conexion
-from app.models.proyecto_tema_modelo import DelimitacionTema
 
 
-async def registrar_proyecto_tema(data: dict) -> DelimitacionTema:
+
+async def insertar_contexto(data: dict):
     conn = await obtener_conexion()
-    async with conn.cursor() as cur:
-        try:
+    try:
+        async with conn.cursor() as cur:
+            await cur.execute("""
+                SELECT * FROM fn_contexto_insertar(%s, %s, %s, %s, %s);
+            """, (
+                data["id_proyecto"],
+                data["area_general"],
+                data["tema_especifico"],
+                data["problema_investigacion"],
+                data["metodologia"]
+            ))
+            result = await cur.fetchone()
+            await conn.commit()
+
+            if result:
+                return {
+                    "id_contexto": result[0],
+                    "area_general": result[1],
+                    "tema_especifico": result[2],
+                    "problema_investigacion": result[3],
+                    "metodologia": result[4]
+                }
+                   
+            else:
+                return None
+    except Exception as e:
+        await conn.rollback()
+        raise e
+    finally:
+        await conn.close()
+
+async def obtener_contexto_por_id(id_contexto: int):
+ 
+    conn = await obtener_conexion()
+    try:
+        async with conn.cursor() as cur:
             await cur.execute(
-                """
-                SELECT * FROM fn_proyecto_delimitacion_registrar(%s,%s, %s, %s, %s);
-                """,
-                (
-                    data["area_general"],
-                    data["tema_especifico"],
-                    data["problema_investigacion"],
-                    data["metodologia_enfoque"],
-                    data["id_proyecto"]
-                ),
+                "SELECT * FROM fn_contexto_listar_id(%s);",
+                (id_contexto,)
             )
+            row = await cur.fetchone()
+           
+            if not row:
+                return None
 
-            result = await cur.fetchone()
-            if result:
-                await conn.commit() 
-                t_id_delimitacion, t_area_general, t_tema_especifico, t_problema_investigacion, t_metodologia_enfoque, t_id_proyecto = result
-                return DelimitacionTema(
-                    id_delimitacion = t_id_delimitacion,
-                    area_general = t_area_general,
-                    tema_especifico = t_tema_especifico,
-                    problema_investigacion = t_problema_investigacion, 
-                    metodologia_enfoque = t_metodologia_enfoque,
-                    id_proyecto = t_id_proyecto
-                )
-                    
-                
-            
-            return None
-
-        except Exception as e:
-            await conn.rollback()
-            raise Exception(f"Error al registrar usuario: {e}")
-
-        finally:
-            if not conn.closed:
-                await conn.close()
-
-
-async def listar_proyecto_tema(data: dict) -> DelimitacionTema:
-    conn = await obtener_conexion()
-    async with conn.cursor() as cur:
-        try:
-            await cur.execute("SELECT * FROM fn_proyecto_delimitacion_listar_id(%s);",(data["id_proyecto"],))
-
-            result = await cur.fetchone()
-            if result:
-                await conn.commit() 
-                t_id_delimitacion, t_area_general, t_tema_especifico, t_problema_investigacion, t_metodologia_enfoque, t_id_proyecto = result
-                return DelimitacionTema(
-                    id_delimitacion = t_id_delimitacion,
-                    area_general = t_area_general,
-                    tema_especifico = t_tema_especifico,
-                    problema_investigacion = t_problema_investigacion, 
-                    metodologia_enfoque = t_metodologia_enfoque,
-                    id_proyecto = t_id_proyecto
-                )
-                    
-                
-            
-            return None
-
-        except Exception as e:
-            await conn.rollback()
-            raise Exception(f"Error al registrar usuario: {e}")
-
-        finally:
-            if not conn.closed:
-                await conn.close()
+            return {
+                "area_general": row[0],
+                "tema_especifico": row[1],
+                "problema_investigacion": row[2],
+                "metodologia": row[3],
+            }
+    except Exception as e:
+        raise e
+    finally:
+        await conn.close()

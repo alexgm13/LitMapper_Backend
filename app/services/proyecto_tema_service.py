@@ -1,11 +1,9 @@
 from typing import Dict
-from app.repositories.proyecto_tema_repository import listar_proyecto_tema, registrar_proyecto_tema
+from app.repositories.proyecto_tema_repository import insertar_contexto
 
 
-async def listar_proyecto_tema_service(data: Dict):
-    tema = await listar_proyecto_tema(data)
-    return tema
+
 
 async def registrar_proyecto_tema_service(data: Dict):
-    tema = await registrar_proyecto_tema(data)
-    return tema
+    contexto = await insertar_contexto(data)
+    return contexto

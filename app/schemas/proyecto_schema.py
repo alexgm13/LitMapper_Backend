@@ -1,7 +1,9 @@
 from pydantic import BaseModel
+from typing import Optional
 
-
-class ProyectoInsertar(BaseModel):
+class Proyecto(BaseModel):
+    id_usuario: Optional[int] = None
+    id_proyecto:Optional[int] = None
     titulo: str
     descripcion: str
-    id_usuario: int
+    

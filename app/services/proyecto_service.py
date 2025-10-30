@@ -4,3 +4,5 @@ from typing import Dict
 async def insertar_proyecto_service(data: Dict):
     proyecto = await insertar_proyecto(data)
     return proyecto
+
+

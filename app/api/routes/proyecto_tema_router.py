@@ -1,15 +1,35 @@
-from fastapi import APIRouter
-from app.schemas.proyecto_tema_schema import TemaListar, TemaRegistrar
-from app.services.proyecto_tema_service import listar_proyecto_tema_service,registrar_proyecto_tema_service
+from fastapi import APIRouter, status
+from typing import Dict
+from app.schemas.base_schema import APIResponse
+from app.services.proyecto_tema_service import registrar_proyecto_tema_service
 
 router = APIRouter(prefix="/tema", tags=["Delimitacion Tema"])
 
-@router.post(path="/registar")
-async def registrar_tema(data: TemaRegistrar):
-    tema = await registrar_proyecto_tema_service(data.model_dump())
-    return tema
+@router.post(path="/tema")
+async def registrar_tema(data: Dict):
+    try:
+        contexto = await registrar_proyecto_tema_service(data)
+        return APIResponse(
+            success=True,
+            message="Contexto creado correctamente",
+            data=contexto,
+            meta=None,
+            status_code=status.HTTP_201_CREATED
+        )
+    except ValueError as e:
+        return APIResponse(
+            success=False,
+            message="Error de validación",
+            errors=str(e),
+            status_code=status.HTTP_400_BAD_REQUEST
+        )
 
-@router.post(path="/listar")
-async def listar_tema(data: TemaListar):
-    tema = await listar_proyecto_tema_service(data.model_dump())
-    return tema
+    except Exception as e:
+        return APIResponse(
+            success=False,
+            message="Error interno al crear el contexto",
+            errors=str(e),
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+

@@ -63,7 +63,7 @@ async def obtener_usuario_por_email(email: str):
                     "nombre": nombre_usuario,  
                     "id_rol": id_rol_usuario,
                     "rol": rol_descripcion
-                }
+                } 
          
             return None 
 
