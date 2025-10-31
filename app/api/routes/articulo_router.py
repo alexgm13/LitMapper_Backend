@@ -1,8 +1,8 @@
 from fastapi import APIRouter, UploadFile, Form, status
 from app.schemas.articulo_schema import Articulo
-from typing import List
+from typing import List, Dict
 from app.schemas.base_schema import APIResponse
-from app.services.articulo_service import analizar_csv_articles, analizar_articulos_relevancia, obtener_matriz
+from app.services.articulo_service import analizar_csv_articles, analizar_articulos_relevancia, obtener_matriz, insertar_articulo_detalle
 
 router = APIRouter(prefix="/articulo", tags=["Gestion Articulo"])
 
@@ -44,7 +44,34 @@ async def analizar_articulo(
         )
     
    
+@router.post(path="/detalle")
+async def insertar_articulo_detalle_endpoint(articulos: List[Dict]):
+    try:
+        articulo = await insertar_articulo_detalle(articulos)
+   
+        return APIResponse(
+            success=True,
+            message="Detalles de los articulos insertados correctamente",
+            data=articulo,
+            meta=None,
+            status_code=status.HTTP_201_CREATED
+        )
+    except ValueError as e:
+        return APIResponse(
+            success=False,
+            message="Error de validación",
+            errors=str(e),
+            status_code=status.HTTP_400_BAD_REQUEST
+        )
 
+    except Exception as e:
+        return APIResponse(
+            success=False,
+            message="Error interno al insertar los articulos",
+            errors=str(e),
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+   
 
 @router.post(path="/brecha")
 async def obtener_brecha(
@@ -53,9 +80,34 @@ async def obtener_brecha(
     tema_especifico: str = Form(...),
     problema_investigacion: str = Form(...),
     metodologia_enfoque : str = Form(...),
-    doi: str = Form (...)
 ):
+    try:
+        articulo = await obtener_matriz(file.file, area_general, tema_especifico, problema_investigacion, metodologia_enfoque)
    
-   articulo = await obtener_matriz(file.file, area_general, tema_especifico, problema_investigacion, metodologia_enfoque, doi)
+        return APIResponse(
+            success=True,
+            message="Articulos analizados correctamente",
+            data=articulo,
+            meta=None,
+            status_code=status.HTTP_201_CREATED
+        )
+    except ValueError as e:
+        return APIResponse(
+            success=False,
+            message="Error de validación",
+            errors=str(e),
+            status_code=status.HTTP_400_BAD_REQUEST
+        )
 
-   return articulo
+    except Exception as e:
+        return APIResponse(
+            success=False,
+            message="Error interno al analizar los articulos",
+            errors=str(e),
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+   
+   
+   
+
+

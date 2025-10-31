@@ -4,6 +4,7 @@ import io, asyncio
 import re, unicodedata
 import fitz
 from app.external.articulo import analizar_relevancia_ia, identificar_brecha_ia, extraccion_cognitiva_ia
+from app.repositories.articulo_repository import insertar_articulo, insertar_articulo_detalle_db
 
 
 def to_str(v) -> str:
@@ -34,11 +35,11 @@ async def analizar_csv_articles(data: bytes) -> List[Dict]:
     df = normalize_headers(df)
     results = []
     for i, row in df.iterrows():
-
+        doi     = to_str(row.get("doi"))
         titulo = to_str(row.get("title"))
         resumen = to_str(row.get("abstract"))
         anio = to_str(row.get("year"))
-        doi     = to_str(row.get("doi"))
+        
         autor_palabras_clave = to_str(row.get("author keywords"))
         index_palabras_clave = to_str(row.get("index keywords"))
         results.append({
@@ -58,16 +59,17 @@ async def analizar_articulos_relevancia(articulos: List[Dict], area_general: str
             tasks = []
             async def _worker(articulo: Dict) -> Dict:
                 async with sem:
-                    resultado_ia = await analizar_relevancia_ia(
-                    articulo,
-                    area_general,
-                    tema_especifico,
-                    problema_investigacion,
-                    metodologia_enfoque
-                    )
+
+                    id_articulo = await insertar_articulo(articulo)
+                    resultado_ia = await analizar_relevancia_ia( articulo,area_general,tema_especifico,problema_investigacion, metodologia_enfoque)
+                    
                     articulo_actualizado = {
-                    **articulo, 
-                    "es_relevante": resultado_ia.es_relevante
+                    "id_articulo" : id_articulo,
+                    **articulo,
+                    "detalle": {
+                        "es_relevante": resultado_ia.es_relevante,
+                        "explicacion": resultado_ia.explicacion
+                    } 
                     }
                     return articulo_actualizado
             
@@ -115,21 +117,40 @@ def normalizar_texto_general(texto: str) -> str:
     return texto.strip()
 
 
-async def obtener_matriz(file, area_general: str, tema_especifico: str, problema_investigacion :str, metodologia_enfoque :str, doi:str):
+async def obtener_matriz(file, area_general: str, tema_especifico: str, problema_investigacion :str, metodologia_enfoque :str):
     texto = extraer_texto_pdf(file)
+    print(texto)
     texto_normalizado = normalizar_texto_general(texto)
     texto_analizado = await extraccion_cognitiva_ia(texto_normalizado)
+    print(texto_analizado)
     brecha = await identificar_brecha_ia(texto_normalizado, area_general, tema_especifico, problema_investigacion, metodologia_enfoque)
-
-    articulo = { 
-        "doi" : doi,
-        "objetivo_estudio" : texto_analizado.objetivo_estudio,
-        "metodologia" :  texto_analizado.metodologia,
-        "hallazgos" : texto_analizado.hallazgos,
-        "brecha" : brecha.brecha_principal
+    print(brecha)
+    detalle = {
+        "detalle" :{
+            "objetivo_estudio" : texto_analizado.objetivo_estudio,
+            "metodologia" :  texto_analizado.metodologia,
+            "hallazgos" : texto_analizado.hallazgos,
+        },
+        "brecha":{
+            "brecha_investigacion" : brecha.brecha_principal,
+            "tipo_brecha": brecha.tipo_brecha
+        }
     }
+    print(detalle)
 
-    return articulo
+    return detalle
+
+
+async def insertar_articulo_detalle(articulos : List[Dict]):
+     
+    lista_id = []
+    for articulo in articulos:
+        id_detalle = await insertar_articulo_detalle_db(articulo)
+        lista_id.append(id_detalle)
+        
+    return lista_id
+
+     
 
         
 

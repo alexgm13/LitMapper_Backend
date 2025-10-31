@@ -20,6 +20,7 @@ class ArticuloRequest(BaseModel):
 
 class ArticuloResponseAPI(BaseModel):
     es_relevante: bool
+    explicacion: str
 
 
 class ResumenEstudio(BaseModel):
@@ -36,7 +37,6 @@ class Brecha(BaseModel):
 
 class AnalisisBrechas(BaseModel):
 
-    brechas_detectadas: List[Brecha]
-    relevancia_con_contexto: Literal["Alta", "Media", "Baja"]
-    razonamiento_general: str
+    tipo_brecha : str
     brecha_principal: str
+    

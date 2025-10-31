@@ -12,5 +12,4 @@ async def generar_terminos_para_todos_pico(pico_list: List[PicoInput]) -> List[P
         tasks.append(tarea)
     resultados = await asyncio.gather(*tasks)
     return resultados
-    
 

@@ -11,7 +11,7 @@ async def analizar_relevancia_ia(articulo: Dict, area_general: str, tema_especif
         model="gpt-4o-mini",
         prompt={
         "id": "pmpt_68f9aa116718819392fb28a8e837530b0b951877105ae7c8",
-        "version": "1",
+        "version": "3",
         "variables": {
         "area_general": area_general,
         "tema_especifico": tema_especifico,
