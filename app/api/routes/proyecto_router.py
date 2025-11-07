@@ -6,7 +6,7 @@ from app.schemas.base_schema import APIResponse
 
 router = APIRouter(prefix="/proyecto", tags=["Proyecto"])
 
-@router.post(path="/")
+@router.post(path="")
 async def insertar_proyecto(proyecto: Dict):
 
     try:

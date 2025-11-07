@@ -5,7 +5,7 @@ from app.services.proyecto_tema_service import registrar_proyecto_tema_service
 
 router = APIRouter(prefix="/tema", tags=["Delimitacion Tema"])
 
-@router.post(path="/")
+@router.post(path="")
 async def insertar_tema(data: Dict):
     try:
         contexto = await registrar_proyecto_tema_service(data)
