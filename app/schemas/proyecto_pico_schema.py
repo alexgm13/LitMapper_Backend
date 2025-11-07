@@ -3,14 +3,11 @@ from typing import List
 
 
 
-    
-class PicoInput(BaseModel):
-    elemento_pico:str
-    descripcion_elemento:str
-
+class ElementoPico(BaseModel):
+    descripcion_elemento: str
+    terminos_de_busqueda: List[str]
 
 class PicoOutput(BaseModel):
-    descripcion_elemento: str
-    elemento_pico: str
-    terminos_de_busqueda: List[str]
+    elemento_pico: ElementoPico
+   
 

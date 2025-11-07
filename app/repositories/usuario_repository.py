@@ -17,17 +17,7 @@ async def insertar_usuario(data: dict):
                     data["id_rol"],
                 ),
             )
-
-            result = await cur.fetchone()
-            if result:
-                await conn.commit() 
-                email_usuario, hash_guardado = result
-                return {
-                    "email": email_usuario,
-                    "contrasena": hash_guardado
-                }
-            
-            return None
+            await conn.commit() 
 
         except Exception as e:
             await conn.rollback()
@@ -51,18 +41,16 @@ async def obtener_usuario_por_email(email: str):
                 (
                     id_usuario,
                     email_usuario,
-                    hash_guardado,
+                    contrasena,
                     nombre_usuario,
-                    id_rol_usuario,
-                    rol_descripcion 
+                    nombre_rol
                 ) = result
                 return {
                     "id_user": id_usuario,
                     "email": email_usuario,
-                    "contrasena": hash_guardado, 
+                    "contrasena": contrasena, 
                     "nombre": nombre_usuario,  
-                    "id_rol": id_rol_usuario,
-                    "rol": rol_descripcion
+                    "nombre_rol": nombre_rol
                 } 
          
             return None 

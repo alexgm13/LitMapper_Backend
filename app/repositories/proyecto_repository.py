@@ -14,8 +14,6 @@ async def insertar_proyecto(data: dict):
             ))
             result = await cur.fetchone()
             await conn.commit()
-            if not result:
-                raise Exception("No se insertó el proyecto correctamente.")
             return {
                 "id_proyecto": result[0],
                 "titulo": result[1],
@@ -23,7 +21,6 @@ async def insertar_proyecto(data: dict):
             }
 
     except Exception as e:
-    
         await conn.rollback()
         raise Exception(f"Error al insertar proyecto: {e}") from e
 

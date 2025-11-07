@@ -5,15 +5,14 @@ from app.services.proyecto_tema_service import registrar_proyecto_tema_service
 
 router = APIRouter(prefix="/tema", tags=["Delimitacion Tema"])
 
-@router.post(path="/tema")
-async def registrar_tema(data: Dict):
+@router.post(path="/")
+async def insertar_tema(data: Dict):
     try:
         contexto = await registrar_proyecto_tema_service(data)
         return APIResponse(
             success=True,
             message="Contexto creado correctamente",
             data=contexto,
-            meta=None,
             status_code=status.HTTP_201_CREATED
         )
     except ValueError as e:

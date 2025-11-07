@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, status
 from app.services.proyecto_service import insertar_proyecto_service
 from typing import Dict
 from app.schemas.base_schema import APIResponse
@@ -6,7 +6,7 @@ from app.schemas.base_schema import APIResponse
 
 router = APIRouter(prefix="/proyecto", tags=["Proyecto"])
 
-@router.post(path="/proyecto")
+@router.post(path="/")
 async def insertar_proyecto(proyecto: Dict):
 
     try:
@@ -15,7 +15,6 @@ async def insertar_proyecto(proyecto: Dict):
             success=True,
             message="Proyecto creado correctamente",
             data=proyecto,
-            meta=None,
             status_code=status.HTTP_201_CREATED
         )
     except ValueError as e:

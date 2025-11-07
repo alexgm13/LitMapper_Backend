@@ -23,10 +23,18 @@ class ArticuloResponseAPI(BaseModel):
     explicacion: str
 
 
-class ResumenEstudio(BaseModel):
+class ArticuloDetalle(BaseModel):
+    problema_investigacion: str
     objetivo_estudio: str
-    metodologia: str
-    hallazgos: str
+    fundamento_teorico: str
+    enfoque_metodologico: str
+    muestra_poblacion:str
+    instrumentos_tecnicas:str
+    principales_resultados: str
+    tipo_brecha: str
+    brecha_identificada:str
+    aportaciones:str
+    notas_relevancia_contexto:str
 
 
 class Brecha(BaseModel):

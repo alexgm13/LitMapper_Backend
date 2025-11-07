@@ -15,3 +15,9 @@ class TemaListar(BaseModel):
     id_proyecto:  int
   
 
+class Contexto(BaseModel):
+    id_contexto: Optional[int] = None
+    area_general: str
+    tema_especifico: str
+    problema_investigacion: str
+    metodologia_enfoque:str
