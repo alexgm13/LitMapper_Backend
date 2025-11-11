@@ -1,6 +1,7 @@
 import pandas as pd
 from typing import List, Dict
 import io, asyncio
+from fastapi.concurrency import run_in_threadpool
 from app.helpers.articulo import extraer_texto_pdf, normalizar_texto_general, normalize_headers, to_str, calcular_taf, calcular_ici
 from app.external.articulo import analizar_relevancia_ia, extraccion_cognitiva_ia
 from app.repositories.articulo_repository import insertar_articulo, insertar_articulo_detalle_db, listar_articulos_db, articulo_articulo_relevancia_db, listar_articulos_detallados_db
@@ -85,7 +86,9 @@ async def obtener_matriz(file, area_general: str, tema_especifico: str, problema
     texto_normalizado = normalizar_texto_general(texto)
     detalle = await extraccion_cognitiva_ia(area_general,tema_especifico, problema_investigacion, metodologia_enfoque, texto_normalizado)
     tfa =  calcular_taf(texto_normalizado, detalle.brechas_identificada.descripcion)
-    print(detalle)
+    ici = calcular_ici(texto_normalizado, detalle.brechas_identificada.descripcion)
+    
+    print(ici)
     print(tfa)
 
     return detalle

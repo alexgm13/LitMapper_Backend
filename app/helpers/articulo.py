@@ -8,7 +8,9 @@ import numpy as np
 
 
 
+
 nltk.download('punkt', quiet=True)
+nltk.download('punkt_tab', quiet=True)
 model = SentenceTransformer('all-MiniLM-L6-v2')
 
 def to_str(v) -> str:
