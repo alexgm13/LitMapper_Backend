@@ -22,6 +22,11 @@ class ArticuloResponseAPI(BaseModel):
     es_relevante: bool
     explicacion: str
 
+class Brecha(BaseModel):
+    tipo: Literal["Conceptual", "Metodológica", "De Datos", "De Comprensión", "De Intervención"]
+    descripcion: str
+    sustento: Optional[str] = None
+
 
 class ArticuloDetalle(BaseModel):
     problema_investigacion: str
@@ -31,20 +36,8 @@ class ArticuloDetalle(BaseModel):
     muestra_poblacion:str
     instrumentos_tecnicas:str
     principales_resultados: str
-    tipo_brecha: str
-    brecha_identificada:str
+    brechas_identificada: Brecha
     aportaciones:str
     notas_relevancia_contexto:str
 
 
-class Brecha(BaseModel):
-  
-    tipo: Literal["conceptual", "metodológica", "de datos", "de comprensión", "de intervención"]
-    descripcion: str
-    evidencia_textual: str
-
-class AnalisisBrechas(BaseModel):
-
-    tipo_brecha : str
-    brecha_principal: str
-    

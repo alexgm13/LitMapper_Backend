@@ -1,7 +1,7 @@
 from openai import AsyncOpenAI, APIConnectionError, APIStatusError, AuthenticationError, RateLimitError, OpenAIError
 from app.core.config import settings
 from typing import Dict
-from app.schemas.articulo_schema import ArticuloResponseAPI, ArticuloDetalle, AnalisisBrechas
+from app.schemas.articulo_schema import ArticuloResponseAPI, ArticuloDetalle
 
 client = AsyncOpenAI(api_key=settings.OPEN_API_KEY)
 
@@ -56,7 +56,7 @@ async def identificar_brecha_ia(texto:str, area_general: str, tema_especifico: s
             "texto_pdf": texto
                 }
             },
-            text_format=AnalisisBrechas
+
         )
         return response.output_parsed
     except AuthenticationError:
@@ -79,7 +79,7 @@ async def extraccion_cognitiva_ia(area_general: str, tema_especifico: str, probl
         model="gpt-4o",
         prompt={
             "id": "pmpt_68fbbc48315c819495b4ab25ecd53a14030467127ca259fe",
-            "version": "8",
+            "version": "9",
             "variables": {
                 "area_general":area_general,
                 "tema_especifico": tema_especifico,
